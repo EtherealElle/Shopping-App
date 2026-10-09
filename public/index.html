@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopping Tool</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>Shopping Tool</h1>
+      <nav class="tabs" id="category-tabs" aria-label="Store category"></nav>
+      <button type="button" class="button" id="choose-stores">Stores</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="store" id="top-picks" hidden>
+      <div class="store-head">
+        <h2>Biggest markdowns</h2>
+        <span class="status">Largest price cuts across your live-price stores, measured against each store's own list price</span>
+      </div>
+      <div class="grid" id="top-picks-grid"></div>
+    </section>
+    <div id="store-sections"></div>
+    <p class="empty-page" id="empty-page" hidden>No stores selected in this category. Use the Stores button to pick some.</p>
+  </main>
+
+  <dialog id="store-dialog" aria-labelledby="store-dialog-title">
+    <form method="dialog">
+      <div class="dialog-head">
+        <h2 id="store-dialog-title">Choose stores</h2>
+        <button class="button" value="done">Done</button>
+      </div>
+      <input type="search" id="store-search" placeholder="Search stores" aria-label="Search stores" autocomplete="off">
+      <p class="legend">
+        <span class="kind kind-live">Live prices</span> read straight from the store.
+        <span class="kind kind-feed">Community deals</span> are posted by shoppers on Slickdeals.
+      </p>
+      <div id="store-list"></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
