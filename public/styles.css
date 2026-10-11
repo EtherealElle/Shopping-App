@@ -215,6 +215,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
 
 .more { margin-top: 12px; }
 .empty-page { margin-top: 48px; text-align: center; color: var(--muted); }
+.footnote { margin-top: 40px; color: var(--muted); font-size: 13px; }
 
 dialog {
   width: min(680px, calc(100vw - 32px));

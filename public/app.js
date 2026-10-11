@@ -7,6 +7,9 @@ const TOP_PICKS_PER_STORE = 3;
 const TOP_PICKS_TOTAL = 12;
 
 const state = {
+  // 'local' when served by server.js (deals fetched on demand), 'static' on GitHub Pages
+  // (deals fetched ahead of time by the build).
+  mode: 'local',
   stores: [],
   selected: new Set(),
   category: 'all',
@@ -106,11 +109,13 @@ function pump() {
 async function fetchDeals({ id, refresh }) {
   const previous = state.results.get(id)?.data || null;
   try {
-    const res = await fetch(`/api/deals?store=${encodeURIComponent(id)}${refresh ? '&refresh' : ''}`);
+    // Relative URL: on GitHub Pages the site lives under a sub-path, not at the domain root.
+    const res = await fetch(`data/deals/${encodeURIComponent(id)}.json${refresh ? '?refresh' : ''}`);
     if (!res.ok) throw new Error(`the app returned an error (${res.status})`);
     state.results.set(id, { loading: false, data: await res.json() });
   } catch (err) {
-    const reason = err instanceof TypeError ? 'the app server is not running' : err.message;
+    const offline = state.mode === 'local' ? 'the app server is not running' : 'the site could not be reached';
+    const reason = err instanceof TypeError ? offline : err.message;
     state.results.set(id, { loading: false, data: previous, failed: reason });
   }
   renderStore(id);
@@ -154,8 +159,8 @@ function statusFor(store, result) {
   const { data } = result;
   const updated = `updated ${timeAgo(data.fetchedAt)}`;
   if (result.loading) return { text: 'Refreshing…' };
-  if (result.failed) return { text: `Refresh failed: ${result.failed}. Showing results ${updated}.`, error: true };
-  if (data.error && data.stale) return { text: `Refresh failed: ${data.error}. Showing results ${updated}.`, error: true };
+  if (result.failed) return { text: `Latest update failed: ${result.failed}. Showing results ${updated}.`, error: true };
+  if (data.error && data.stale) return { text: `Latest update failed: ${data.error}. Showing results ${updated}.`, error: true };
   if (data.error) return { text: `Couldn't load: ${data.error}.`, error: true };
   const count = data.deals.length;
   return { text: `${count} deal${count === 1 ? '' : 's'} · ${updated}` };
@@ -175,7 +180,8 @@ function renderStore(id) {
     el('h2', {}, store.name),
     el('span', { class: `kind ${isLive(store) ? 'kind-live' : 'kind-feed'}` }, isLive(store) ? 'Live prices' : 'Community deals'),
     el('span', { class: `status${status.error ? ' error' : ''}` }, status.text),
-    el('button', { type: 'button', class: 'link-button', disabled: result?.loading, onclick: () => { enqueue(id, true); renderStore(id); } }, 'Refresh'),
+    // Only the local server can go and fetch a store again on request.
+    state.mode === 'local' && el('button', { type: 'button', class: 'link-button', disabled: result?.loading, onclick: () => { enqueue(id, true); renderStore(id); } }, 'Refresh'),
   );
 
   let body;
@@ -276,13 +282,19 @@ function renderStoreList() {
 
 async function start() {
   try {
-    const res = await fetch('/api/stores');
+    const res = await fetch('data/stores.json');
     if (!res.ok) throw new Error();
-    state.stores = await res.json();
+    const catalog = await res.json();
+    state.mode = catalog.mode;
+    state.stores = catalog.stores;
   } catch {
     $('empty-page').hidden = false;
-    $('empty-page').textContent = "Couldn't load the store list. Make sure the app is running (npm start), then reload.";
+    $('empty-page').textContent = "Couldn't load the store list. Reload to try again. If you're running the app on your own computer, make sure it's started (npm start).";
     return;
+  }
+  if (state.mode === 'static') {
+    $('footnote').hidden = false;
+    $('footnote').textContent = 'Deals are refreshed automatically several times a day, so a price may have changed since the last update. Check the store before buying.';
   }
   const known = new Set(state.stores.map((s) => s.id));
   state.selected = new Set(loadSelection().filter((id) => known.has(id)));

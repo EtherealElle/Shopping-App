@@ -33,9 +33,11 @@ async function serveStatic(res, pathname) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
-    if (url.pathname === '/api/stores') return sendJson(res, 200, STORES.map(publicStore));
-    if (url.pathname === '/api/deals') {
-      const store = STORES.find((s) => s.id === url.searchParams.get('store'));
+    // Same paths as the files the static build writes, so the page works unchanged on GitHub Pages.
+    if (url.pathname === '/data/stores.json') return sendJson(res, 200, { mode: 'local', stores: STORES.map(publicStore) });
+    const dealsPath = url.pathname.match(/^\/data\/deals\/([^/]+)\.json$/);
+    if (dealsPath) {
+      const store = STORES.find((s) => s.id === dealsPath[1]);
       if (!store) return sendJson(res, 404, { error: 'Unknown store' });
       return sendJson(res, 200, await getDeals(store, { refresh: url.searchParams.has('refresh') }));
     }
