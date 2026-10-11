@@ -2,7 +2,7 @@
 // per store. Pass --save-snapshot to also record this run's results in snapshot/.
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { STORES, publicStore } from '../lib/stores.js';
+import { CATEGORIES, STORES, publicStore } from '../lib/stores.js';
 import { fetchDeals, failedResult } from '../lib/deals.js';
 
 const ROOT = path.join(import.meta.dirname, '..');
@@ -81,6 +81,7 @@ await cp(path.join(ROOT, 'public'), OUT_DIR, { recursive: true });
 await writeJson(path.join(OUT_DIR, 'data', 'stores.json'), {
   mode: 'static',
   generatedAt: Date.now(),
+  categories: CATEGORIES,
   stores: STORES.map(publicStore),
 });
 

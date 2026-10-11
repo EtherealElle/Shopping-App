@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { STORES, publicStore } from './lib/stores.js';
+import { CATEGORIES, STORES, publicStore } from './lib/stores.js';
 import { getDeals } from './lib/deals.js';
 
 const PORT = Number(process.env.PORT) || 4321;
@@ -34,7 +34,9 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
     // Same paths as the files the static build writes, so the page works unchanged on GitHub Pages.
-    if (url.pathname === '/data/stores.json') return sendJson(res, 200, { mode: 'local', stores: STORES.map(publicStore) });
+    if (url.pathname === '/data/stores.json') {
+      return sendJson(res, 200, { mode: 'local', categories: CATEGORIES, stores: STORES.map(publicStore) });
+    }
     const dealsPath = url.pathname.match(/^\/data\/deals\/([^/]+)\.json$/);
     if (dealsPath) {
       const store = STORES.find((s) => s.id === dealsPath[1]);

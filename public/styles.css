@@ -11,7 +11,6 @@
   --save-bg: #e2f3ea;
   --feed: #7a4a0b;
   --feed-bg: #f6ead6;
-  --warn: #a13a1f;
   --thumb-bg: #efede8;
   --shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 4px 14px rgb(0 0 0 / 5%);
 }
@@ -29,7 +28,6 @@
     --save-bg: #1c3329;
     --feed: #e3b877;
     --feed-bg: #362a17;
-    --warn: #f09a80;
     --thumb-bg: #2a2a27;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%);
   }
@@ -46,6 +44,7 @@ body {
 
 h1, h2, h3, p { margin: 0; }
 
+/* Header: title and Stores button on one row, category tabs on the row below. */
 .topbar {
   position: sticky;
   top: 0;
@@ -59,15 +58,16 @@ h1, h2, h3, p { margin: 0; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 10px 20px;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 12px 20px 10px;
 }
 
 .topbar h1 { font-size: 18px; letter-spacing: -0.01em; }
 
-.tabs { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; flex: 0 0 100%; }
 
 .tab {
   border: 0;
@@ -77,9 +77,16 @@ h1, h2, h3, p { margin: 0; }
   padding: 6px 12px;
   border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
 }
 .tab:hover { color: var(--text); }
 .tab[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+
+/* On a phone the tabs become one row that scrolls sideways instead of stacking. */
+@media (max-width: 700px) {
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 0 20px; }
+  .tabs::-webkit-scrollbar { display: none; }
+}
 
 .button {
   border: 1px solid var(--border);
@@ -103,22 +110,31 @@ h1, h2, h3, p { margin: 0; }
   cursor: pointer;
 }
 .link-button:hover { text-decoration: underline; }
-.link-button:disabled { color: var(--muted); cursor: default; text-decoration: none; }
 
 main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
 
-.store { margin-top: 28px; }
-
-.store-head {
+.toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 14px 0 16px;
 }
-.store-head h2 { font-size: 19px; letter-spacing: -0.01em; }
-.store-head .status { color: var(--muted); font-size: 13px; flex: 1; min-width: 180px; }
-.store-head .status.error { color: var(--warn); }
+
+.summary { flex: 1 1 240px; color: var(--muted); font-size: 13px; }
+
+.control { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+
+.control select {
+  font: inherit;
+  font-size: 14px;
+  max-width: 190px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
 
 .kind {
   display: inline-block;
@@ -137,12 +153,6 @@ main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
   gap: 14px;
-}
-
-/* On narrow screens the category tabs get their own row under the title and Stores button. */
-@media (max-width: 600px) {
-  .topbar-inner { justify-content: space-between; }
-  .tabs { order: 3; flex: 0 0 100%; }
 }
 
 @media (max-width: 480px) {
@@ -182,6 +192,14 @@ main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
 
 .card-body { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; flex: 1; }
 
+.card-store {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .card-title {
   font-size: 13.5px;
   font-weight: 500;
@@ -199,7 +217,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
 .meta { color: var(--muted); font-size: 12px; }
 
 .skeleton {
-  aspect-ratio: 0.72;
+  aspect-ratio: 0.68;
   border-radius: 12px;
   background: linear-gradient(100deg, var(--thumb-bg) 40%, var(--surface) 50%, var(--thumb-bg) 60%);
   background-size: 200% 100%;
@@ -219,12 +237,11 @@ main { max-width: 1280px; margin: 0 auto; padding: 8px 20px 60px; }
   font-size: 14px;
 }
 
-.more { margin-top: 12px; }
-.empty-page { margin-top: 48px; text-align: center; color: var(--muted); }
+.more { margin-top: 20px; text-align: center; }
 .footnote { margin-top: 40px; color: var(--muted); font-size: 13px; }
 
 dialog {
-  width: min(680px, calc(100vw - 32px));
+  width: min(720px, calc(100vw - 32px));
   max-height: min(760px, calc(100vh - 48px));
   padding: 0;
   border: 1px solid var(--border);
@@ -251,10 +268,12 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; paddin
 .legend { color: var(--muted); font-size: 13px; }
 
 #store-list { overflow-y: auto; min-height: 0; padding-right: 4px; }
-#store-list h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 14px 0 6px; }
-#store-list h3:first-child { margin-top: 0; }
 
-.store-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px 12px; }
+.group-head { display: flex; align-items: baseline; gap: 14px; margin: 16px 0 6px; font-size: 13px; }
+.group-head:first-child { margin-top: 0; }
+.group-head h3 { flex: 1; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.store-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2px 12px; }
 
 .store-option {
   display: flex;
@@ -266,3 +285,4 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; paddin
 }
 .store-option:hover { background: var(--bg); }
 .store-option .name { flex: 1; }
+.store-status { margin-left: 8px; color: var(--muted); font-size: 12px; }

@@ -12,33 +12,40 @@
   <header class="topbar">
     <div class="topbar-inner">
       <h1>Shopping Tool</h1>
-      <nav class="tabs" id="category-tabs" aria-label="Store category"></nav>
       <button type="button" class="button" id="choose-stores">Stores</button>
+      <nav class="tabs" id="category-tabs" aria-label="Category"></nav>
     </div>
   </header>
 
   <main>
-    <section class="store" id="top-picks" hidden>
-      <div class="store-head">
-        <h2>Biggest markdowns</h2>
-        <span class="status">Largest price cuts across your live-price stores, measured against each store's own list price</span>
-      </div>
-      <div class="grid" id="top-picks-grid"></div>
-    </section>
-    <div id="store-sections"></div>
-    <p class="empty-page" id="empty-page" hidden>No stores selected in this category. Use the Stores button to pick some.</p>
+    <div class="toolbar">
+      <p class="summary" id="summary" aria-live="polite"></p>
+      <label class="control">Sort
+        <select id="sort"></select>
+      </label>
+      <label class="control">Store
+        <select id="store-filter"></select>
+      </label>
+      <button type="button" class="link-button" id="refresh" hidden>Refresh</button>
+    </div>
+    <div class="grid" id="deals"></div>
+    <p class="empty" id="empty" hidden></p>
+    <div class="more">
+      <button type="button" class="button" id="show-more" hidden>Show more</button>
+    </div>
     <p class="footnote" id="footnote" hidden></p>
   </main>
 
   <dialog id="store-dialog" aria-labelledby="store-dialog-title">
     <form method="dialog">
       <div class="dialog-head">
-        <h2 id="store-dialog-title">Choose stores</h2>
+        <h2 id="store-dialog-title">Stores</h2>
         <button class="button" value="done">Done</button>
       </div>
       <input type="search" id="store-search" placeholder="Search stores" aria-label="Search stores" autocomplete="off">
       <p class="legend">
-        <span class="kind kind-live">Live prices</span> read straight from the store.
+        Untick a store to hide its deals everywhere.
+        <span class="kind kind-live">Live prices</span> are read straight from the store;
         <span class="kind kind-feed">Community deals</span> are posted by shoppers on Slickdeals.
       </p>
       <div id="store-list"></div>
