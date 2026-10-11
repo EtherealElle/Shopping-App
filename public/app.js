@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'shoppingTool.selectedStores';
-const DEFAULT_STORES = ['kate-spade-outlet', 'kate-spade', 'pandora', 'coach-outlet', 'best-buy', 'micro-center', 'newegg', 'rebecca-minkoff', 'lovense'];
+const DEFAULT_STORES = ['kate-spade-outlet', 'kate-spade', 'pandora', 'coach-outlet', 'best-buy', 'micro-center', 'newegg', 'rebecca-minkoff', 'lovense', 'zumiez', 'hot-topic', 'spencers'];
 const CATEGORIES = [['all', 'All'], ['fashion', 'Fashion'], ['tech', 'Tech'], ['general', 'Everything stores']];
 const PREVIEW_COUNT = 12;
 const MAX_PARALLEL = 3;
